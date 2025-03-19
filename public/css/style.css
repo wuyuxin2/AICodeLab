@@ -1,0 +1,84 @@
+/* 证件照背景色替换工具样式 */
+
+.upload-area {
+    position: relative;
+    min-height: 200px;
+    cursor: pointer;
+}
+
+.upload-prompt {
+    transition: all 0.3s ease;
+    background-color: #f8f9fa;
+}
+
+.upload-prompt:hover {
+    background-color: #e9ecef;
+}
+
+.preview-container {
+    max-height: 400px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.preview-container img {
+    max-height: 380px;
+    object-fit: contain;
+}
+
+.color-option {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid #dee2e6;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.color-option:hover,
+.color-option.active {
+    transform: scale(1.2);
+    border: 2px solid #000;
+}
+
+#customColor {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.result-container canvas {
+    max-height: 400px;
+    object-fit: contain;
+}
+
+/* 加载中动画 */
+.loading {
+    position: relative;
+}
+
+.loading:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.7) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 50 50"><circle cx="25" cy="25" r="20" fill="none" stroke="%23007bff" stroke-width="5"><animateTransform attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="1s" repeatCount="indefinite"/></circle></svg>') no-repeat center center;
+    z-index: 10;
+    border-radius: 4px;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .col-md-6.border-end {
+        border-right: none !important;
+        border-bottom: 1px solid #dee2e6;
+        padding-bottom: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+}
