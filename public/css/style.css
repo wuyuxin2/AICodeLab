@@ -56,6 +56,20 @@
     object-fit: contain;
 }
 
+/* 编辑画布样式 */
+.position-relative {
+    position: relative;
+}
+
+#editCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+}
+
 /* 加载中动画 */
 .loading {
     position: relative;
@@ -82,6 +96,19 @@
 
 .progress-bar {
     transition: width 0.3s ease;
+}
+
+/* 编辑工具栏样式 */
+.edit-toolbar {
+    margin-bottom: 1rem;
+}
+
+.edit-toolbar .btn-group {
+    display: flex;
+}
+
+.edit-toolbar .btn {
+    flex: 1;
 }
 
 /* 响应式调整 */
