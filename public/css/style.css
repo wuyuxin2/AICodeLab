@@ -73,6 +73,17 @@
     border-radius: 4px;
 }
 
+/* 进度条样式 */
+.progress {
+    height: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    transition: width 0.3s ease;
+}
+
 /* 响应式调整 */
 @media (max-width: 768px) {
     .col-md-6.border-end {

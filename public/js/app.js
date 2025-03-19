@@ -21,7 +21,9 @@ const downloadBtn = document.getElementById('downloadBtn');
 const customColor = document.getElementById('customColor');
 const photoSize = document.getElementById('photoSize');
 const colorOptions = document.querySelectorAll('.color-option');
-
+// 新增：进度条相关元素
+const processingContainer = document.getElementById('processingContainer');
+const progressBar = document.getElementById('progressBar');
 // 检查WebGL支持
 function checkWebGLSupport() {
     const canvas = document.createElement('canvas');
@@ -152,18 +154,32 @@ function handleFile(file) {
     reader.readAsDataURL(file);
 }
 
+// 更新进度条
+function updateProgressBar(percent) {
+    progressBar.style.width = `${percent}%`;
+    progressBar.setAttribute('aria-valuenow', percent);
+}
+
 // 处理图像 - 更换背景色
 async function processImage() {
     if (!originalImage || isProcessing) return;
     
     isProcessing = true;
     processBtn.disabled = true;
-    uploadArea.classList.add('loading');
+    
+    // 显示进度条
+    processingContainer.classList.remove('d-none');
+    resultContainer.classList.add('d-none');
+    updateProgressBar(10); // 初始进度
     
     try {
         // 设置画布尺寸
         let width = originalImage.width;
         let height = originalImage.height;
+        
+        // 添加延迟以确保进度条显示
+        await new Promise(resolve => setTimeout(resolve, 100));
+        updateProgressBar(20);
         
         // 根据选择的照片尺寸调整
         const sizeOption = photoSize.value;
@@ -181,6 +197,9 @@ async function processImage() {
             }
         }
         
+        await new Promise(resolve => setTimeout(resolve, 100));
+        updateProgressBar(30);
+        
         // 设置画布尺寸
         resultCanvas.width = width;
         resultCanvas.height = height;
@@ -194,12 +213,18 @@ async function processImage() {
             ctx.fillStyle = selectedColor;
             ctx.fillRect(0, 0, width, height);
             
+            await new Promise(resolve => setTimeout(resolve, 100));
+            updateProgressBar(40);
+            
             // 使用 BodyPix 进行人像分割
             const segmentation = await bodypixModel.segmentPerson(originalImage, {
                 flipHorizontal: false,
                 internalResolution: 'medium',
                 segmentationThreshold: 0.7
             });
+            
+            await new Promise(resolve => setTimeout(resolve, 100));
+            updateProgressBar(60);
             
             // 创建临时画布用于调整原图尺寸
             const tempCanvas = document.createElement('canvas');
@@ -210,11 +235,17 @@ async function processImage() {
             // 在临时画布上绘制调整大小后的原图
             tempCtx.drawImage(originalImage, 0, 0, width, height);
             
+            await new Promise(resolve => setTimeout(resolve, 100));
+            updateProgressBar(70);
+            
             // 获取图像数据
             const imageData = tempCtx.getImageData(0, 0, width, height);
             
             // 调整分割掩码以匹配调整后的尺寸
             const resizedMask = resizeSegmentation(segmentation.data, segmentation.width, segmentation.height, width, height);
+            
+            await new Promise(resolve => setTimeout(resolve, 100));
+            updateProgressBar(80);
             
             // 应用掩码：保留人像，替换背景
             const data = imageData.data;
@@ -234,8 +265,11 @@ async function processImage() {
                     data[i + 1] = g; // G
                     data[i + 2] = b; // B
                     // 保持原始 alpha 值
-                }
-            }
+        }
+    }
+    
+            await new Promise(resolve => setTimeout(resolve, 100));
+            updateProgressBar(90);
             
             // 将处理后的图像数据绘制到结果画布上
             ctx.putImageData(imageData, 0, 0);
@@ -243,9 +277,15 @@ async function processImage() {
             // 基本模式：使用简单的颜色检测和替换
             // 这种方法不如AI分割准确，但不需要WebGL支持
             
+            await new Promise(resolve => setTimeout(resolve, 100));
+            updateProgressBar(50);
+            
             // 绘制背景色
             ctx.fillStyle = selectedColor;
             ctx.fillRect(0, 0, width, height);
+            
+            await new Promise(resolve => setTimeout(resolve, 100));
+            updateProgressBar(70);
             
             // 绘制原始图像
             ctx.drawImage(originalImage, 0, 0, width, height);
@@ -264,23 +304,37 @@ async function processImage() {
             
             const [bgR, bgG, bgB] = hexToRgb(selectedColor);
             
+            await new Promise(resolve => setTimeout(resolve, 100));
+            updateProgressBar(90);
+            
             // 提示用户正在使用基本模式
             alert('由于您的设备不支持WebGL，将使用基本模式处理图像。请在处理后手动调整不满意的区域。');
             
             // 简单地将图像绘制在背景色上
             ctx.drawImage(originalImage, 0, 0, width, height);
-        }
+}
+
+        await new Promise(resolve => setTimeout(resolve, 100));
+        updateProgressBar(100);
         
-        // 显示结果
-        resultContainer.classList.remove('d-none');
+        // 短暂延迟后显示结果，让用户看到进度条完成
+        setTimeout(() => {
+            // 隐藏进度条
+            processingContainer.classList.add('d-none');
+            
+            // 显示结果
+            resultContainer.classList.remove('d-none');
+        }, 500);
         
     } catch (error) {
         console.error('处理图像时出错:', error);
         alert('处理图像时出错，请重试。');
+        
+        // 隐藏进度条
+        processingContainer.classList.add('d-none');
     } finally {
         isProcessing = false;
         processBtn.disabled = false;
-        uploadArea.classList.remove('loading');
     }
 }
 
